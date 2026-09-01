@@ -1,11 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import logo from '../assets/images/logo.png'
 import mascot from '../assets/images/mascot.png'
 
 const route = useRoute()
 const menuOpen = ref(false)
+
+const lastUpdated = computed(() => {
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  const day = String(yesterday.getDate()).padStart(2, '0')
+  const month = String(yesterday.getMonth() + 1).padStart(2, '0')
+  const year = yesterday.getFullYear()
+  return `${day}-${month}-${year}`
+})
 
 const links = [
   { to: '/', label: 'Actividades' },
@@ -35,7 +44,7 @@ function closeMenu() {
       </div>
 
       <div class="meta-block">
-        <p class="updated"><strong>Última actualización sitio web: 23-09-2025</strong></p>
+        <p class="updated"><strong>Última actualización sitio web: {{ lastUpdated }}</strong></p>
       </div>
 
       <img :src="mascot" alt="" class="mascot" width="90" height="105" />
