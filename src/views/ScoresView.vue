@@ -43,11 +43,6 @@ async function fetchScores() {
   }
 }
 
-function selectCategory(key) {
-  selectedCategory.value = key
-  page.value = 1
-}
-
 function formatDate(isoString) {
   const d = new Date(isoString)
   const day = String(d.getDate()).padStart(2, '0')
@@ -67,22 +62,18 @@ watch([selectedCategory, page], fetchScores, { immediate: true })
 
     <section class="container body">
       <div v-if="filterOptions.length > 1" class="filters">
-        <button
-          class="filter-pill"
-          :class="{ active: selectedCategory === 'all' }"
-          @click="selectCategory('all')"
+        <label class="filter-label" for="category-filter">Categoría</label>
+        <select
+          id="category-filter"
+          class="filter-select"
+          v-model="selectedCategory"
+          @change="page = 1"
         >
-          Todas
-        </button>
-        <button
-          v-for="cat in filterOptions"
-          :key="cat.key"
-          class="filter-pill"
-          :class="{ active: selectedCategory === cat.key }"
-          @click="selectCategory(cat.key)"
-        >
-          {{ cat.label }}
-        </button>
+          <option value="all">Todas</option>
+          <option v-for="cat in filterOptions" :key="cat.key" :value="cat.key">
+            {{ cat.label }}
+          </option>
+        </select>
       </div>
 
       <p v-if="status === 'loading'" class="state-text">Cargando partituras…</p>
@@ -164,32 +155,38 @@ watch([selectedCategory, page], fetchScores, { immediate: true })
 
 .filters {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 40px;
 }
 
-.filter-pill {
+.filter-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-mute-2);
+}
+
+.filter-select {
   font-family: var(--font-sans);
   font-size: 14.5px;
   font-weight: 500;
-  padding: 9px 18px;
-  border-radius: 999px;
-  border: 1px solid var(--border-strong);
-  background: transparent;
   color: var(--text);
+  background: var(--card-bg)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23241d19' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E")
+    no-repeat right 12px center;
+  background-size: 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 9px 38px 9px 18px;
+  appearance: none;
+  -webkit-appearance: none;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.filter-pill:hover {
-  background: rgba(36, 29, 25, 0.06);
-}
-
-.filter-pill.active {
-  background: var(--dark);
-  border-color: var(--dark);
-  color: var(--dark-text);
+.filter-select:hover {
+  background-color: rgba(36, 29, 25, 0.06);
 }
 
 .state-text {
