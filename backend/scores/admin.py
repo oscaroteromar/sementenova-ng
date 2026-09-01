@@ -18,6 +18,7 @@ class ZipImportForm(forms.Form):
 @admin.register(Score)
 class ScoreAdmin(admin.ModelAdmin):
     list_display = ("thumbnail", "title", "category", "uploaded_at")
+    list_display_links = ("title",)
     list_filter = ("category",)
     search_fields = ("title",)
     change_list_template = "admin/scores/score/change_list.html"
