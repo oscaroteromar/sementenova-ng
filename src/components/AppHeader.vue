@@ -10,6 +10,7 @@ const links = [
   { to: '/', label: 'Actividades' },
   { to: '/sobrenos', label: 'Sobre nós' },
   { to: '/colaboradores', label: 'Colaboradores' },
+  { to: '/partituras', label: 'Partituras' },
 ]
 
 function toggleMenu() {

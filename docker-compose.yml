@@ -1,0 +1,38 @@
+# Local dev only for the scores backend (backend/). Production hosting
+# is not decided yet. The Vue frontend runs separately via `npm run dev`.
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: sementenova-scores-backend
+    environment:
+      SECRET_KEY: dev-secret-key-change-me
+      DEBUG: "true"
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      DATABASE_URL: postgres://scores:scores@db:5432/scores
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+    volumes:
+      - ./backend:/app
+      - /app/.venv # keep the image's Linux-built venv, don't shadow it with the host's
+      - scores_media:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    command: ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  db:
+    image: postgres:16
+    container_name: sementenova-scores-db
+    environment:
+      POSTGRES_DB: scores
+      POSTGRES_USER: scores
+      POSTGRES_PASSWORD: scores
+    volumes:
+      - scores_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  scores_media:
+  scores_db_data:
