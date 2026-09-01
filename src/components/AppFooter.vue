@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import mascot from '../assets/images/mascot.png'
+import oleiros from '../assets/images/oleiros.png'
 
 const lastUpdated = computed(() => {
   const yesterday = new Date()
@@ -40,6 +41,11 @@ const lastUpdated = computed(() => {
         </a>
       </div>
 
+      <div class="footer-col">
+        <p class="eyebrow">Colaboradores</p>
+        <img :src="oleiros" alt="Concello de Oleiros" class="collab-logo" />
+      </div>
+
       <div class="footer-col brand-col">
         <img :src="mascot" alt="" class="mascot" width="72" height="84" />
         <p class="brand">
@@ -66,7 +72,7 @@ const lastUpdated = computed(() => {
   padding-top: 56px;
   padding-bottom: 22px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 40px;
 }
 
@@ -95,6 +101,11 @@ const lastUpdated = computed(() => {
 
 .address:hover {
   color: var(--accent);
+}
+
+.collab-logo {
+  width: 160px;
+  height: auto;
 }
 
 .brand-col {

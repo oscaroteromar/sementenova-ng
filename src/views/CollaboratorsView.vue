@@ -1,6 +1,4 @@
-<script setup>
-import oleiros from '../assets/images/oleiros.png'
-</script>
+<script setup></script>
 
 <template>
   <div class="collaborators">
@@ -31,11 +29,6 @@ import oleiros from '../assets/images/oleiros.png'
           15/12/2023, foinos concedida á subvención do ano 2023 á nosa agrupación, Semente Nova.
         </p>
       </article>
-    </section>
-
-    <section class="container supporter">
-      <p class="eyebrow">Coa colaboración de</p>
-      <img :src="oleiros" alt="Concello de Oleiros" class="supporter-logo" />
     </section>
   </div>
 </template>
@@ -108,28 +101,10 @@ import oleiros from '../assets/images/oleiros.png'
   color: var(--text);
 }
 
-.supporter {
-  padding-top: 56px;
-}
-
-.supporter .eyebrow {
-  margin-bottom: 20px;
-}
-
-.supporter-logo {
-  width: 220px;
-  height: auto;
-  border-radius: 8px;
-}
-
 @media (max-width: 560px) {
   .grant-card {
     grid-template-columns: 1fr;
     gap: 14px;
-  }
-
-  .supporter-logo {
-    width: 180px;
   }
 }
 </style>
