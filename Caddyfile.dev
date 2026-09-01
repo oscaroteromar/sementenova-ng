@@ -1,16 +1,8 @@
 # Local dev reverse proxy: one origin (:2015) fronting both containers,
 # so the frontend can call the API same-origin (no CORS needed on this path).
+# The whole Django backend (admin, API, static, media) lives under /api/.
 :2015 {
 	handle /api/* {
-		reverse_proxy backend:8000
-	}
-	handle /admin/* {
-		reverse_proxy backend:8000
-	}
-	handle /static/* {
-		reverse_proxy backend:8000
-	}
-	handle /media/* {
 		reverse_proxy backend:8000
 	}
 	handle {

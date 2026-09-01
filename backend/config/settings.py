@@ -113,14 +113,14 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (Django admin's own CSS/JS)
-
-STATIC_URL = "static/"
+# Static files (Django admin's own CSS/JS). Kept under /api/ so the whole
+# backend is reachable through a single path prefix (see Caddyfile.dev).
+STATIC_URL = "api/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Uploaded score files
 
-MEDIA_URL = "/media/"
+MEDIA_URL = "/api/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
