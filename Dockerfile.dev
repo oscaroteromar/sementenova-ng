@@ -1,0 +1,9 @@
+# Local dev only — runs the Vite dev server inside docker-compose.
+# Not used for production builds (those don't need Node at runtime at all).
+FROM node:20-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host"]

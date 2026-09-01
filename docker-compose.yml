@@ -1,5 +1,10 @@
-# Local dev only for the scores backend (backend/). Production hosting
-# is not decided yet. The Vue frontend runs separately via `npm run dev`.
+# Local dev only. Production hosting is not decided yet.
+#
+# Two ways to run the frontend against this stack:
+#  - `npm run dev` on the host, talking to backend on localhost:8000 (CORS)
+#  - `docker compose --profile full up`, which also starts `frontend` +
+#    `caddy`: a single origin at localhost:2015 fronting both containers
+#    (same-origin, no CORS needed on that path). See Caddyfile.dev.
 services:
   backend:
     build:
@@ -10,7 +15,7 @@ services:
       DEBUG: "true"
       ALLOWED_HOSTS: localhost,127.0.0.1
       DATABASE_URL: postgres://scores:scores@db:5432/scores
-      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:2015
     volumes:
       - ./backend:/app
       - /app/.venv # keep the image's Linux-built venv, don't shadow it with the host's
@@ -20,6 +25,33 @@ services:
     depends_on:
       - db
     command: ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: sementenova-frontend
+    profiles: ["full"]
+    environment:
+      VITE_API_URL: "" # same-origin: requests go through the caddy proxy below
+      CHOKIDAR_USEPOLLING: "true" # reliable file-watching across the bind mount
+    volumes:
+      - .:/app
+      - /app/node_modules # keep the image's node_modules, don't shadow it with the host's
+    depends_on:
+      - backend
+
+  caddy:
+    image: caddy:2.10
+    container_name: sementenova-caddy
+    profiles: ["full"]
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile
+    ports:
+      - "2015:2015"
+    depends_on:
+      - frontend
+      - backend
 
   db:
     image: postgres:16
