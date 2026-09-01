@@ -1,4 +1,6 @@
 <script setup>
+import baile from '../assets/images/baile.jpg'
+
 const board = [
   { role: 'Presidencia', name: 'Inmaculada Begoña Castro Pérez' },
   { role: 'Vicepresidencia', name: 'Roberto Rabina Simón' },
@@ -14,71 +16,162 @@ const board = [
 </script>
 
 <template>
-  <div class="container about">
-    <h2 class="section-title">Sobre nós</h2>
-    <hr class="divider" style="margin-left: 0" />
+  <div class="about">
+    <section class="container hero">
+      <p class="eyebrow">Sobre nós</p>
+      <h1 class="hero-title">Dende <span class="accent-italic">1981</span> en Perillo</h1>
+    </section>
 
-    <p>
-      Semente Nova fundouse no 1981 coa idea de proporcionar á mocidade unha maneira de
-      entretemento e unha formación pedagóxica e musical.
-    </p>
-    <p>
-      A misión das seccións de danza é a de facer un traballo de investigación, de recollida de
-      bailes, cancións, costumes e tradicións pola nosa autonomía, e nesta labor intentar
-      divulgala.
-    </p>
-    <p>
-      En canto á sección de rondalla e coral, os obxectivos e a idea básica é a de formar
-      musicalmente á xuventude, así como crear un amplo arquivo musical para a difusión da
-      música.
-    </p>
-    <p>
-      Desde 1996, e co ánimo de ampliar os contactos con outras agrupacións e por tanto con
-      outras tradicións, organizamos uns encontros folclóricos onde participaron formacións de
-      distintas cidades de España e Portugal así como grupos de Centros Galegos en Suíza.
-    </p>
+    <section class="container prose-grid">
+      <p class="lead">
+        Semente Nova fundouse no 1981 coa idea de proporcionar á mocidade unha maneira de
+        entretemento e unha formación pedagóxica e musical.
+      </p>
+      <p class="support">
+        A misión das seccións de danza é a de facer un traballo de investigación, de recollida de
+        bailes, cancións, costumes e tradicións pola nosa autonomía, e nesta labor intentar
+        divulgala.
+      </p>
+    </section>
 
-    <h3 class="board-heading">Desde o 17 de febreiro de 2023 a directiva está formada por:</h3>
-    <ul class="board-list">
-      <li v-for="member in board" :key="member.role">
-        <strong>{{ member.role }}:</strong> {{ member.name }}
-      </li>
-    </ul>
+    <section class="container prose-grid prose-grid-second">
+      <p class="support">
+        En canto á sección de rondalla e coral, os obxectivos e a idea básica é a de formar
+        musicalmente á xuventude, así como crear un amplo arquivo musical para a difusión da
+        música.
+      </p>
+      <p class="support">
+        Desde 1996, e co ánimo de ampliar os contactos con outras agrupacións e por tanto con
+        outras tradicións, organizamos uns encontros folclóricos onde participaron formacións de
+        distintas cidades de España e Portugal así como grupos de Centros Galegos en Suíza.
+      </p>
+    </section>
+
+    <section class="container photo-section">
+      <img :src="baile" alt="A agrupación" class="photo" />
+    </section>
+
+    <section class="container board-section">
+      <p class="eyebrow">Dende o 17 de febreiro de 2023</p>
+      <h2 class="board-title">A xunta directiva</h2>
+      <div class="board-card">
+        <div v-for="member in board" :key="member.role" class="board-row">
+          <span class="board-role">{{ member.role }}</span>
+          <span class="board-name">{{ member.name }}</span>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
 .about {
-  padding-top: 24px;
-  padding-bottom: 24px;
-  max-width: 760px;
+  padding-bottom: 88px;
 }
 
-.about p {
-  color: var(--color-text);
+.hero {
+  padding-top: 72px;
 }
 
-.board-heading {
-  margin-top: 24px;
-  margin-bottom: 10px;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-heading);
-}
-
-.board-list {
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 0.96;
+  letter-spacing: -0.015em;
   margin: 0;
-  padding: 0;
-  list-style: none;
+  max-width: 16ch;
+  text-wrap: balance;
 }
 
-.board-list li {
-  padding: 5px 0;
-  border-bottom: 1px solid var(--color-strip);
-  font-size: 14px;
+.accent-italic {
+  font-style: italic;
+  color: var(--accent);
 }
 
-.board-list li:last-child {
+.prose-grid {
+  padding-top: 46px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+}
+
+.prose-grid-second {
+  padding-top: 24px;
+}
+
+.lead {
+  font-size: 21px;
+  line-height: 1.5;
+  margin: 0;
+  color: var(--text);
+}
+
+.support {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.photo-section {
+  padding-top: 56px;
+}
+
+.photo {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+.board-section {
+  padding-top: 72px;
+}
+
+.board-title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  margin: 4px 0 24px;
+}
+
+.board-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 8px 28px;
+}
+
+.board-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+  font-size: 15px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.board-row:last-child {
   border-bottom: none;
+}
+
+.board-role {
+  color: var(--text-mute-2);
+}
+
+.board-name {
+  color: var(--text);
+}
+
+@media (max-width: 700px) {
+  .prose-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .board-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
 }
 </style>

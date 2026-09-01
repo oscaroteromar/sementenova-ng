@@ -1,20 +1,10 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import logo from '../assets/images/logo.png'
-import mascot from '../assets/images/mascot.png'
 
 const route = useRoute()
 const menuOpen = ref(false)
-
-const lastUpdated = computed(() => {
-  const yesterday = new Date()
-  yesterday.setDate(yesterday.getDate() - 1)
-  const day = String(yesterday.getDate()).padStart(2, '0')
-  const month = String(yesterday.getMonth() + 1).padStart(2, '0')
-  const year = yesterday.getFullYear()
-  return `${day}-${month}-${year}`
-})
 
 const links = [
   { to: '/', label: 'Actividades' },
@@ -34,20 +24,13 @@ function closeMenu() {
 <template>
   <header class="header">
     <div class="header-inner container">
-      <router-link to="/" class="logo-link" @click="closeMenu">
-        <img :src="logo" alt="A.A.C. Semente Nova" class="logo" width="132" height="120" />
+      <router-link to="/" class="brand" @click="closeMenu">
+        <img :src="logo" alt="A.A.C. Semente Nova" class="logo" width="44" height="44" />
+        <span class="brand-text">
+          <span class="brand-name">Semente Nova</span>
+          <span class="brand-sub">Agrupación Artística e Cultural</span>
+        </span>
       </router-link>
-
-      <div class="title-block">
-        <h1 class="title">Semente Nova</h1>
-        <p class="subtitle">&nbsp; Agrupación Artística e Cultural</p>
-      </div>
-
-      <div class="meta-block">
-        <p class="updated"><strong>Última actualización sitio web: {{ lastUpdated }}</strong></p>
-      </div>
-
-      <img :src="mascot" alt="" class="mascot" width="90" height="105" />
 
       <button
         class="burger"
@@ -58,129 +41,112 @@ function closeMenu() {
       >
         <span></span><span></span><span></span>
       </button>
+
+      <nav class="nav" :class="{ open: menuOpen }">
+        <router-link
+          v-for="link in links"
+          :key="link.to"
+          :to="link.to"
+          class="nav-link"
+          :class="{ active: route.path === link.to }"
+          @click="closeMenu"
+        >
+          {{ link.label }}
+        </router-link>
+      </nav>
     </div>
-
-    <nav class="nav" :class="{ open: menuOpen }">
-      <ul class="container">
-        <li v-for="link in links" :key="link.to">
-          <router-link
-            :to="link.to"
-            class="nav-link"
-            :class="{ selected: route.path === link.to }"
-            @click="closeMenu"
-          >
-            {{ link.label }}
-          </router-link>
-        </li>
-        <li class="more">
-          <span class="nav-link expandable">Más</span>
-        </li>
-      </ul>
-    </nav>
-
-    <div class="header-rule"></div>
   </header>
 </template>
 
 <style scoped>
 .header {
-  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(246, 243, 236, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
 }
 
 .header-inner {
   display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 12px 24px;
+  align-items: center;
+  gap: 28px;
   padding-top: 14px;
   padding-bottom: 14px;
-  position: relative;
 }
 
-.logo-link {
-  flex-shrink: 0;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
 }
 
 .logo {
-  width: 100px;
-  height: auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
 }
 
-.title-block {
-  flex: 1 1 220px;
-  padding-top: 8px;
-}
-
-.title {
-  font-size: 26px;
-  text-align: center;
-  color: #333;
-}
-
-.subtitle {
-  font-size: 16px;
-  text-align: center;
-  line-height: 1.2;
-  margin: 2px 0 0;
-  color: #333;
-}
-
-.meta-block {
-  flex: 1 1 260px;
-  padding-top: 8px;
-}
-
-.updated {
-  font-size: 11px;
-  text-align: right;
-  margin-bottom: 4px;
-}
-
-.nav ul {
+.brand-text {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brand-name {
+  font-family: var(--font-serif);
+  font-size: 25px;
+  line-height: 1;
+  color: var(--text);
+}
+
+.brand-sub {
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
   gap: 4px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  flex-wrap: wrap;
 }
 
 .nav-link {
-  display: inline-block;
-  padding: 8px 12px;
-  color: var(--color-accent);
-  font-weight: 400;
-  border-right: 1px solid var(--color-accent);
-  cursor: pointer;
-}
-
-.nav li:last-child .nav-link {
-  border-right: none;
-}
-
-.nav-link.selected {
-  font-weight: 700;
+  text-decoration: none;
+  font-size: 14.5px;
+  font-weight: 500;
+  padding: 9px 16px;
+  border-radius: 999px;
+  color: var(--text);
+  transition: background 0.15s ease;
 }
 
 .nav-link:hover {
-  opacity: 0.75;
+  background: rgba(36, 29, 25, 0.06);
+  color: var(--text);
 }
 
-.mascot {
-  width: 64px;
-  height: auto;
-  flex-shrink: 0;
-  margin-left: auto;
+.nav-link.active {
+  background: var(--dark);
+  color: var(--dark-text);
 }
 
-.header-rule {
-  height: 1px;
-  background: var(--color-strip);
+.nav-link.active:hover {
+  background: var(--dark);
 }
 
 .burger {
   display: none;
+  margin-left: auto;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
@@ -194,37 +160,12 @@ function closeMenu() {
 
 .burger span {
   display: block;
-  height: 3px;
-  background: var(--color-accent);
+  height: 2px;
+  background: var(--text);
   border-radius: 2px;
 }
 
 @media (max-width: 700px) {
-  .header-inner {
-    align-items: center;
-  }
-
-  .title {
-    font-size: 20px;
-  }
-
-  .subtitle {
-    font-size: 13px;
-  }
-
-  .meta-block {
-    flex-basis: 100%;
-    order: 3;
-  }
-
-  .updated {
-    text-align: center;
-  }
-
-  .mascot {
-    display: none;
-  }
-
   .burger {
     display: flex;
   }
@@ -232,28 +173,26 @@ function closeMenu() {
   .nav {
     display: none;
     width: 100%;
+    order: 3;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    margin-left: 0;
+    padding-bottom: 10px;
   }
 
   .nav.open {
-    display: block;
-  }
-
-  .nav ul {
-    flex-direction: column;
-    align-items: center;
+    display: flex;
   }
 
   .nav-link {
-    border-right: none;
-    padding: 10px;
-    width: 100%;
     text-align: center;
+    padding: 12px 16px;
   }
-}
 
-@media (min-width: 701px) {
-  .nav ul {
-    padding-right: 0;
+  .header-inner {
+    flex-wrap: wrap;
   }
 }
 </style>

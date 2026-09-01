@@ -1,127 +1,155 @@
 <script setup>
-import instagram from '../assets/images/instagram.png'
+import { computed } from 'vue'
+import mascot from '../assets/images/mascot.png'
+
+const lastUpdated = computed(() => {
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  const day = String(yesterday.getDate()).padStart(2, '0')
+  const month = String(yesterday.getMonth() + 1).padStart(2, '0')
+  const year = yesterday.getFullYear()
+  return `${day}-${month}-${year}`
+})
 </script>
 
 <template>
   <footer class="footer">
     <div class="container footer-main">
       <div class="footer-col">
-        <h4 class="footer-heading">DATOS DE CONTACTO</h4>
-
-        <p class="contact-line">
-          <span class="icon" aria-hidden="true">📞</span>
+        <p class="eyebrow">Datos de contacto</p>
+        <div class="contact-list">
           <a href="tel:722705793">722 70 57 93</a>
-        </p>
-        <p class="contact-line">
-          <span class="icon" aria-hidden="true">✉️</span>
+          <a href="tel:670365902">670 36 59 02</a>
+          <a href="tel:649875702">649 87 57 02</a>
           <a href="mailto:info@sementenova.org">info@sementenova.org</a>
-        </p>
-
-        <p class="extra-phones">
-          670 36 59 02<br />
-          649 87 57 02
-        </p>
-
-        <p class="instagram-line">
-          <img :src="instagram" alt="Instagram" width="20" height="20" />
-          <a
-            href="https://www.instagram.com/sementenova_perillo/"
-            target="_blank"
-            rel="noopener"
-          >
+          <a href="https://www.instagram.com/sementenova_perillo/" target="_blank" rel="noopener">
             sementenova_perillo
           </a>
-        </p>
+        </div>
       </div>
 
       <div class="footer-col">
-        <h4 class="footer-heading">ENDEREZO</h4>
-        <p class="contact-line">
-          <span class="icon" aria-hidden="true">📍</span>
-          <a
-            href="https://www.google.com/maps/search/?api=1&query=%22R%C3%BAa%20Nova%2C%207%2C%20Baixo%20dereita%2C%2015172%20Oleiros%2C%20Spain%22"
-            target="_blank"
-            rel="noopener"
-          >
-            Rúa Nova, 7, Baixo dereita, 15172 Oleiros, Spain
-          </a>
+        <p class="eyebrow">Enderezo</p>
+        <a
+          class="address"
+          href="https://www.google.com/maps/search/?api=1&query=%22R%C3%BAa%20Nova%2C%207%2C%20Baixo%20dereita%2C%2015172%20Oleiros%2C%20Spain%22"
+          target="_blank"
+          rel="noopener"
+        >
+          Rúa Nova, 7, Baixo dereita, 15172 Oleiros, Spain
+        </a>
+      </div>
+
+      <div class="footer-col brand-col">
+        <img :src="mascot" alt="" class="mascot" width="72" height="84" />
+        <p class="brand">
+          Semente Nova<br />
+          <span class="brand-sub">Agrupación Artística e Cultural</span>
         </p>
       </div>
     </div>
 
-    <div class="footer-strip">
-      <p>© Tódolos dereitos reservados</p>
+    <div class="container footer-bottom">
+      <span>© Tódolos dereitos reservados</span>
+      <span>Última actualización sitio web: {{ lastUpdated }}</span>
     </div>
   </footer>
 </template>
 
 <style scoped>
 .footer {
-  margin-top: 32px;
-  background: var(--color-footer-bg);
-  border-top: 1px solid rgba(60, 60, 60, 0.2);
+  border-top: 1px solid var(--border-strong);
+  background: var(--footer-bg);
 }
 
 .footer-main {
+  padding-top: 56px;
+  padding-bottom: 22px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+}
+
+.contact-list {
+  display: grid;
+  gap: 6px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.contact-list a {
+  color: var(--text);
+}
+
+.contact-list a:hover {
+  color: var(--accent);
+}
+
+.address {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  max-width: 20ch;
+  display: block;
+}
+
+.address:hover {
+  color: var(--accent);
+}
+
+.brand-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.mascot {
+  width: 72px;
+  height: 84px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.brand {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  line-height: 1.05;
+  margin: 0;
+  color: var(--text);
+}
+
+.brand-sub {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.footer-bottom {
+  padding-top: 22px;
+  padding-bottom: 40px;
+  border-top: 1px solid rgba(36, 29, 25, 0.12);
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
-  padding: 20px 16px 16px;
+  gap: 16px;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-mute-2);
 }
 
-.footer-col {
-  flex: 1 1 260px;
-}
+@media (max-width: 700px) {
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    text-align: left;
+  }
 
-.footer-heading {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.contact-line {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0 0 8px;
-}
-
-.contact-line a:hover {
-  text-decoration: underline;
-}
-
-.icon {
-  font-size: 18px;
-  width: 20px;
-  text-align: center;
-}
-
-.extra-phones {
-  margin: 0 0 8px 30px;
-  line-height: 1.4;
-  color: var(--color-text-soft);
-}
-
-.instagram-line {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 4px 0 0;
-}
-
-.instagram-line a:hover {
-  text-decoration: underline;
-}
-
-.footer-strip {
-  background: var(--color-footer-strip);
-  padding: 12px 16px;
-}
-
-.footer-strip p {
-  margin: 0;
-  text-align: center;
-  color: #fff;
-  font-size: 14px;
+  .footer-bottom {
+    justify-content: center;
+    text-align: center;
+  }
 }
 </style>
