@@ -44,7 +44,13 @@ class Score(models.Model):
             )
         super().save(*args, **kwargs)
         if self.file and self.file.name != previous_file:
-            self._generate_preview()
+            try:
+                self._generate_preview()
+            except Exception:
+                # A file can pass the .pdf extension check but still fail to
+                # render (corrupt content, etc.) — fall back to no preview
+                # rather than losing the whole save.
+                pass
 
     def _generate_preview(self):
         import pymupdf
