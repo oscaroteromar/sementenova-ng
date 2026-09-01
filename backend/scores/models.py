@@ -47,12 +47,12 @@ class Score(models.Model):
             self._generate_preview()
 
     def _generate_preview(self):
-        import fitz  # PyMuPDF
+        import pymupdf
 
         self.file.open("rb")
         try:
-            document = fitz.open(stream=self.file.read(), filetype="pdf")
-            pixmap = document.load_page(0).get_pixmap(matrix=fitz.Matrix(0.8, 0.8))
+            document = pymupdf.open(stream=self.file.read(), filetype="pdf")
+            pixmap = document.load_page(0).get_pixmap(matrix=pymupdf.Matrix(0.8, 0.8))
             png_bytes = pixmap.tobytes("png")
         finally:
             self.file.close()

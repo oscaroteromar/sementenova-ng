@@ -1,23 +1,52 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { API_BASE } from '../config'
 
-const CATEGORIES = [
-  { key: 'rondalla', label: 'Rondalla' },
-  { key: 'baile', label: 'Baile galego' },
-  { key: 'gaita', label: 'Gaita, pandeireta e percusión' },
-  { key: 'outros', label: 'Outros' },
-]
+const CATEGORY_LABELS = {
+  rondalla: 'Rondalla',
+  baile: 'Baile galego',
+  gaita: 'Gaita, pandeireta e percusión',
+  outros: 'Outros',
+}
+const CATEGORY_ORDER = ['rondalla', 'baile', 'gaita', 'outros']
 
 const scores = ref([])
 const status = ref('loading') // loading | ready | error
+const selectedCategory = ref('all')
+const page = ref(1)
+const numPages = ref(1)
+const availableCategories = ref([])
 
-const groups = computed(() =>
-  CATEGORIES.map((cat) => ({
-    ...cat,
-    items: scores.value.filter((s) => s.category === cat.key),
-  })).filter((group) => group.items.length > 0),
+const filterOptions = computed(() =>
+  CATEGORY_ORDER.filter((key) => availableCategories.value.includes(key)).map((key) => ({
+    key,
+    label: CATEGORY_LABELS[key],
+  })),
 )
+
+async function fetchScores() {
+  status.value = 'loading'
+  try {
+    const params = new URLSearchParams({ page: String(page.value) })
+    if (selectedCategory.value !== 'all') params.set('category', selectedCategory.value)
+
+    const res = await fetch(`${API_BASE}/api/scores/?${params}`)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const data = await res.json()
+
+    scores.value = data.results
+    numPages.value = data.num_pages
+    availableCategories.value = data.available_categories
+    status.value = 'ready'
+  } catch {
+    status.value = 'error'
+  }
+}
+
+function selectCategory(key) {
+  selectedCategory.value = key
+  page.value = 1
+}
 
 function formatDate(isoString) {
   const d = new Date(isoString)
@@ -26,17 +55,7 @@ function formatDate(isoString) {
   return `${day}-${month}-${d.getFullYear()}`
 }
 
-onMounted(async () => {
-  try {
-    const res = await fetch(`${API_BASE}/api/scores/`)
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const data = await res.json()
-    scores.value = data.results
-    status.value = 'ready'
-  } catch {
-    status.value = 'error'
-  }
-})
+watch([selectedCategory, page], fetchScores, { immediate: true })
 </script>
 
 <template>
@@ -47,33 +66,58 @@ onMounted(async () => {
     </section>
 
     <section class="container body">
+      <div v-if="filterOptions.length > 1" class="filters">
+        <button
+          class="filter-pill"
+          :class="{ active: selectedCategory === 'all' }"
+          @click="selectCategory('all')"
+        >
+          Todas
+        </button>
+        <button
+          v-for="cat in filterOptions"
+          :key="cat.key"
+          class="filter-pill"
+          :class="{ active: selectedCategory === cat.key }"
+          @click="selectCategory(cat.key)"
+        >
+          {{ cat.label }}
+        </button>
+      </div>
+
       <p v-if="status === 'loading'" class="state-text">Cargando partituras…</p>
       <p v-else-if="status === 'error'" class="state-text">
         Non se puideron cargar as partituras. Téntao de novo máis tarde.
       </p>
-      <p v-else-if="groups.length === 0" class="state-text">
+      <p v-else-if="scores.length === 0" class="state-text">
         Aínda non hai partituras dispoñibles.
       </p>
 
-      <div v-else class="groups">
-        <div v-for="group in groups" :key="group.key" class="group">
-          <h2 class="group-title">{{ group.label }}</h2>
-          <div class="score-grid">
-            <article v-for="score in group.items" :key="score.id" class="score-card">
-              <a :href="score.file_url" class="score-preview" target="_blank" rel="noopener">
-                <img v-if="score.preview_url" :src="score.preview_url" :alt="score.title" />
-                <span v-else class="score-preview-fallback">PDF</span>
-              </a>
-              <div class="score-info">
-                <p class="score-title">{{ score.title }}</p>
-                <p v-if="score.notes" class="score-notes">{{ score.notes }}</p>
-                <p class="score-date">{{ formatDate(score.uploaded_at) }}</p>
-              </div>
-              <a :href="score.file_url" class="btn btn-outline" download>Descargar</a>
-            </article>
-          </div>
+      <template v-else>
+        <div class="score-grid">
+          <article v-for="score in scores" :key="score.id" class="score-card">
+            <a :href="score.file_url" class="score-preview" target="_blank" rel="noopener">
+              <img v-if="score.preview_url" :src="score.preview_url" :alt="score.title" />
+              <span v-else class="score-preview-fallback">PDF</span>
+            </a>
+            <div class="score-info">
+              <p class="score-category">{{ score.category_display }}</p>
+              <p class="score-title">{{ score.title }}</p>
+              <p v-if="score.notes" class="score-notes">{{ score.notes }}</p>
+              <p class="score-date">{{ formatDate(score.uploaded_at) }}</p>
+            </div>
+            <a :href="score.file_url" class="btn btn-outline" download>Descargar</a>
+          </article>
         </div>
-      </div>
+
+        <div v-if="numPages > 1" class="pagination">
+          <button class="btn btn-outline" :disabled="page <= 1" @click="page--">Anterior</button>
+          <span class="pagination-status">Páxina {{ page }} de {{ numPages }}</span>
+          <button class="btn btn-outline" :disabled="page >= numPages" @click="page++">
+            Seguinte
+          </button>
+        </div>
+      </template>
     </section>
   </div>
 </template>
@@ -106,22 +150,40 @@ onMounted(async () => {
   padding-top: 48px;
 }
 
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.filter-pill {
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  font-weight: 500;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.filter-pill:hover {
+  background: rgba(36, 29, 25, 0.06);
+}
+
+.filter-pill.active {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: var(--dark-text);
+}
+
 .state-text {
   font-size: 17px;
   color: var(--text-soft);
   margin: 0;
-}
-
-.groups {
-  display: grid;
-  gap: 48px;
-}
-
-.group-title {
-  font-family: var(--font-serif);
-  font-size: 26px;
-  color: var(--accent);
-  margin: 0 0 20px;
 }
 
 .score-grid {
@@ -170,6 +232,15 @@ onMounted(async () => {
   min-width: 0;
 }
 
+.score-category {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 6px;
+}
+
 .score-title {
   font-size: 16px;
   font-weight: 500;
@@ -194,5 +265,29 @@ onMounted(async () => {
 .score-card .btn {
   margin: 4px 18px 0;
   text-align: center;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.pagination .btn {
+  padding: 10px 22px;
+}
+
+.pagination .btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-status {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--text-mute-2);
 }
 </style>
