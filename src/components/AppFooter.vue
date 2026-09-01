@@ -23,7 +23,28 @@ const lastUpdated = computed(() => {
           <a href="tel:670365902">670 36 59 02</a>
           <a href="tel:649875702">649 87 57 02</a>
           <a href="mailto:info@sementenova.org">info@sementenova.org</a>
-          <a href="https://www.instagram.com/sementenova_perillo/" target="_blank" rel="noopener">
+          <a
+            href="https://www.instagram.com/sementenova_perillo/"
+            target="_blank"
+            rel="noopener"
+            class="instagram-link"
+          >
+            <svg
+              class="instagram-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"></line>
+            </svg>
             sementenova_perillo
           </a>
         </div>
@@ -89,6 +110,16 @@ const lastUpdated = computed(() => {
 
 .contact-list a:hover {
   color: var(--accent);
+}
+
+.instagram-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.instagram-icon {
+  flex: none;
 }
 
 .address {

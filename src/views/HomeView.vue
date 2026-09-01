@@ -7,28 +7,16 @@ import gaita from '../assets/images/gaita.jpg'
 <template>
   <div class="home">
     <section class="container hero">
-      <div>
-        <p class="eyebrow">Perillo · Oleiros · A Coruña</p>
-        <h1 class="hero-title">
-          Levamos máis de <span class="accent-italic">40 anos</span> sen perder o ritmo!!
-        </h1>
-        <p class="hero-lead">
-          Se queres aprender e disfrutar en boa compañía, anímate e contacta con nós.
-        </p>
-        <div class="hero-actions">
-          <a href="#actividades" class="btn btn-primary">Actividades e Prezos</a>
-          <a href="mailto:info@sementenova.org" class="btn btn-outline">info@sementenova.org</a>
-        </div>
-      </div>
-      <div class="next-event">
-        <p class="eyebrow" style="margin-bottom: 12px">Próxima actuación</p>
-        <p class="next-event-text">
-          O vindeiro 27 de setembro participaremos no XXXI Encontro Folclórico en Lubre. Tes mais
-          información na nosa conta de Instagram:
-          <a href="https://www.instagram.com/sementenova_perillo/" target="_blank" rel="noopener"
-            >sementenova_perillo</a
-          >
-        </p>
+      <p class="eyebrow">Perillo · Oleiros · A Coruña</p>
+      <h1 class="hero-title">
+        Levamos máis de <span class="accent-italic">40 anos</span> sen perder o ritmo!!
+      </h1>
+      <p class="hero-lead">
+        Se queres aprender e disfrutar en boa compañía, anímate e contacta con nós.
+      </p>
+      <div class="hero-actions">
+        <a href="#actividades" class="btn btn-primary">Actividades e Prezos</a>
+        <a href="mailto:info@sementenova.org" class="btn btn-outline">info@sementenova.org</a>
       </div>
     </section>
 
@@ -104,10 +92,6 @@ import gaita from '../assets/images/gaita.jpg'
 .hero {
   padding-top: 72px;
   padding-bottom: 8px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  gap: 56px;
-  align-items: end;
 }
 
 .hero-title {
@@ -137,18 +121,6 @@ import gaita from '../assets/images/gaita.jpg'
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 30px;
-}
-
-.next-event {
-  border-left: 2px solid var(--accent);
-  padding: 4px 0 4px 22px;
-}
-
-.next-event-text {
-  font-size: 17px;
-  line-height: 1.55;
-  margin: 0;
-  color: var(--text);
 }
 
 .photo-band {
@@ -247,12 +219,6 @@ import gaita from '../assets/images/gaita.jpg'
 }
 
 @media (max-width: 860px) {
-  .hero {
-    grid-template-columns: 1fr;
-    align-items: start;
-    gap: 32px;
-  }
-
   .activities-grid {
     grid-template-columns: 1fr;
   }
