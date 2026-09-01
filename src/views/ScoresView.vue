@@ -111,10 +111,22 @@ watch([selectedCategory, page], fetchScores, { immediate: true })
         </div>
 
         <div v-if="numPages > 1" class="pagination">
-          <button class="btn btn-outline" :disabled="page <= 1" @click="page--">Anterior</button>
+          <button
+            class="pagination-arrow"
+            :disabled="page <= 1"
+            aria-label="Páxina anterior"
+            @click="page--"
+          >
+            ←
+          </button>
           <span class="pagination-status">Páxina {{ page }} de {{ numPages }}</span>
-          <button class="btn btn-outline" :disabled="page >= numPages" @click="page++">
-            Seguinte
+          <button
+            class="pagination-arrow"
+            :disabled="page >= numPages"
+            aria-label="Páxina seguinte"
+            @click="page++"
+          >
+            →
           </button>
         </div>
       </template>
@@ -188,8 +200,20 @@ watch([selectedCategory, page], fetchScores, { immediate: true })
 
 .score-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
+}
+
+@media (max-width: 860px) {
+  .score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .score-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .score-card {
@@ -275,12 +299,23 @@ watch([selectedCategory, page], fetchScores, { immediate: true })
   margin-top: 40px;
 }
 
-.pagination .btn {
-  padding: 10px 22px;
+.pagination-arrow {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text);
+  cursor: pointer;
+  padding: 6px 10px;
+  transition: color 0.15s ease;
 }
 
-.pagination .btn:disabled {
-  opacity: 0.4;
+.pagination-arrow:hover:not(:disabled) {
+  color: var(--accent);
+}
+
+.pagination-arrow:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
