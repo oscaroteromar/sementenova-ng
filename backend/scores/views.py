@@ -12,6 +12,9 @@ def score_list(request):
             "category_display": s.get_category_display(),
             "notes": s.notes,
             "file_url": request.build_absolute_uri(s.file.url),
+            "preview_url": (
+                request.build_absolute_uri(s.preview_image.url) if s.preview_image else None
+            ),
             "uploaded_at": s.uploaded_at.isoformat(),
         }
         for s in Score.objects.all()

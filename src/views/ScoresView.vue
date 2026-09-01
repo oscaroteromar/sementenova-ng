@@ -58,8 +58,12 @@ onMounted(async () => {
       <div v-else class="groups">
         <div v-for="group in groups" :key="group.key" class="group">
           <h2 class="group-title">{{ group.label }}</h2>
-          <div class="score-list">
+          <div class="score-grid">
             <article v-for="score in group.items" :key="score.id" class="score-card">
+              <a :href="score.file_url" class="score-preview" target="_blank" rel="noopener">
+                <img v-if="score.preview_url" :src="score.preview_url" :alt="score.title" />
+                <span v-else class="score-preview-fallback">PDF</span>
+              </a>
               <div class="score-info">
                 <p class="score-title">{{ score.title }}</p>
                 <p v-if="score.notes" class="score-notes">{{ score.notes }}</p>
@@ -110,45 +114,71 @@ onMounted(async () => {
 
 .groups {
   display: grid;
-  gap: 40px;
+  gap: 48px;
 }
 
 .group-title {
   font-family: var(--font-serif);
   font-size: 26px;
   color: var(--accent);
-  margin: 0 0 16px;
+  margin: 0 0 20px;
 }
 
-.score-list {
+.score-grid {
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
 }
 
 .score-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 20px 24px;
+  overflow: hidden;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 18px;
+}
+
+.score-preview {
+  display: block;
+  aspect-ratio: 3 / 4;
+  background: var(--footer-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.score-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.score-preview-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--text-mute-2);
 }
 
 .score-info {
+  padding: 0 18px;
   min-width: 0;
 }
 
 .score-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 500;
   margin: 0;
   color: var(--text);
 }
 
 .score-notes {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-soft);
   margin: 4px 0 0;
 }
@@ -162,15 +192,7 @@ onMounted(async () => {
 }
 
 .score-card .btn {
-  flex: none;
-  padding: 10px 20px;
-}
-
-@media (max-width: 560px) {
-  .score-card {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-  }
+  margin: 4px 18px 0;
+  text-align: center;
 }
 </style>
