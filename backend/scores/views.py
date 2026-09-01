@@ -13,6 +13,10 @@ def score_list(request):
     if category and category in Score.Category.values:
         queryset = queryset.filter(category=category)
 
+    search = request.GET.get("search", "").strip()
+    if search:
+        queryset = queryset.filter(title__icontains=search)
+
     available_categories = list(
         Score.objects.order_by().values_list("category", flat=True).distinct()
     )

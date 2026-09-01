@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { API_BASE } from '../config'
 
 const CATEGORY_LABELS = {
@@ -9,10 +9,13 @@ const CATEGORY_LABELS = {
   outros: 'Outros',
 }
 const CATEGORY_ORDER = ['rondalla', 'baile', 'gaita', 'outros']
+const SEARCH_DEBOUNCE_MS = 350
 
 const scores = ref([])
 const status = ref('loading') // loading | ready | error
 const selectedCategory = ref('all')
+const searchInput = ref('')
+const search = ref('')
 const page = ref(1)
 const numPages = ref(1)
 const availableCategories = ref([])
@@ -24,11 +27,24 @@ const filterOptions = computed(() =>
   })),
 )
 
+const hasActiveFilter = computed(() => selectedCategory.value !== 'all' || search.value !== '')
+
+let searchTimeout = null
+watch(searchInput, (value) => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    search.value = value.trim()
+    page.value = 1
+  }, SEARCH_DEBOUNCE_MS)
+})
+onUnmounted(() => clearTimeout(searchTimeout))
+
 async function fetchScores() {
   status.value = 'loading'
   try {
     const params = new URLSearchParams({ page: String(page.value) })
     if (selectedCategory.value !== 'all') params.set('category', selectedCategory.value)
+    if (search.value) params.set('search', search.value)
 
     const res = await fetch(`${API_BASE}/api/scores/?${params}`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -50,7 +66,7 @@ function formatDate(isoString) {
   return `${day}-${month}-${d.getFullYear()}`
 }
 
-watch([selectedCategory, page], fetchScores, { immediate: true })
+watch([selectedCategory, page, search], fetchScores, { immediate: true })
 </script>
 
 <template>
@@ -61,24 +77,40 @@ watch([selectedCategory, page], fetchScores, { immediate: true })
     </section>
 
     <section class="container body">
-      <div v-if="filterOptions.length > 1" class="filters">
-        <label class="filter-label" for="category-filter">Categoría</label>
-        <select
-          id="category-filter"
-          class="filter-select"
-          v-model="selectedCategory"
-          @change="page = 1"
-        >
-          <option value="all">Todas</option>
-          <option v-for="cat in filterOptions" :key="cat.key" :value="cat.key">
-            {{ cat.label }}
-          </option>
-        </select>
+      <div v-if="filterOptions.length > 0" class="filters">
+        <div class="filter-group">
+          <label class="filter-label" for="search-filter">Buscar</label>
+          <input
+            id="search-filter"
+            type="search"
+            class="filter-input"
+            v-model="searchInput"
+            placeholder="Título da partitura…"
+          />
+        </div>
+
+        <div v-if="filterOptions.length > 1" class="filter-group">
+          <label class="filter-label" for="category-filter">Categoría</label>
+          <select
+            id="category-filter"
+            class="filter-select"
+            v-model="selectedCategory"
+            @change="page = 1"
+          >
+            <option value="all">Todas</option>
+            <option v-for="cat in filterOptions" :key="cat.key" :value="cat.key">
+              {{ cat.label }}
+            </option>
+          </select>
+        </div>
       </div>
 
       <p v-if="status === 'loading'" class="state-text">Cargando partituras…</p>
       <p v-else-if="status === 'error'" class="state-text">
         Non se puideron cargar as partituras. Téntao de novo máis tarde.
+      </p>
+      <p v-else-if="scores.length === 0 && hasActiveFilter" class="state-text">
+        Non se atoparon partituras coa busca actual.
       </p>
       <p v-else-if="scores.length === 0" class="state-text">
         Aínda non hai partituras dispoñibles.
@@ -155,9 +187,16 @@ watch([selectedCategory, page], fetchScores, { immediate: true })
 
 .filters {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.filter-group {
+  display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 40px;
 }
 
 .filter-label {
@@ -168,25 +207,45 @@ watch([selectedCategory, page], fetchScores, { immediate: true })
   color: var(--text-mute-2);
 }
 
-.filter-select {
+.filter-select,
+.filter-input {
   font-family: var(--font-sans);
   font-size: 14.5px;
   font-weight: 500;
   color: var(--text);
-  background: var(--card-bg)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23241d19' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E")
-    no-repeat right 12px center;
-  background-size: 14px;
+  background: var(--card-bg);
   border: 1px solid var(--border-strong);
   border-radius: 999px;
-  padding: 9px 38px 9px 18px;
+  padding: 9px 18px;
+}
+
+.filter-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23241d19' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+  padding-right: 38px;
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
 }
 
-.filter-select:hover {
+.filter-input {
+  width: 220px;
+}
+
+.filter-input::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+.filter-select:hover,
+.filter-input:hover {
   background-color: rgba(36, 29, 25, 0.06);
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
 .state-text {
